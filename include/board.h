@@ -69,6 +69,12 @@
 #define		DIGIT_SEL_C_DIRECTION		TRISAbits.TRISA2
 #define		DIGIT_SEL_D					PORTAbits.RA3			// demux digit sel D
 #define		DIGIT_SEL_D_DIRECTION		TRISAbits.TRISA3
+#define		DIGIT_SEL_E					PORTAbits.RA4			// demux digit sel B
+#define		DIGIT_SEL_E_DIRECTION		TRISAbits.TRISA4
+#define		DIGIT_SEL_F					PORTAbits.RA5			// demux digit sel C
+#define		DIGIT_SEL_F_DIRECTION		TRISAbits.TRISA5
+#define		DIGIT_SEL_G					PORTEbits.RE1			// demux digit sel D
+#define		DIGIT_SEL_G_DIRECTION		TRISEbits.TRISE1
 
 
 
@@ -101,7 +107,7 @@
 
 #define DEVICE_ID			(0x01)
 
-#define SYSTEM_CLOCK			(20000000UL)	// Hz		// 20MHz external crystal  used
+#define SYSTEM_CLOCK			(32000000UL)	// Hz		// 20MHz external crystal  used
 
 //#define SYSTEM_CLOCK			(40000000UL)	// Hz		// 10MHz external crystal x4 PLL
 

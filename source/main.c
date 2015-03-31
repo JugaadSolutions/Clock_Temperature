@@ -28,6 +28,8 @@
 #include "i2c_driver.h"
 #include "digitdisplay.h"
 #include "portBInterrupts.h"
+#include "communication.h"
+#include "uart.h"
 
 /*
 *------------------------------------------------------------------------------
@@ -102,7 +104,6 @@ extern UINT16 comUpdateCount;
 *------------------------------------------------------------------------------
 */
 UINT8 message[]="IDEONICS";
-UINT8 tempBuffer[]={'3','6','2','7'};
 /*
 *------------------------------------------------------------------------------
 * Public Constants
@@ -161,15 +162,19 @@ void main(void)
 	portBInterruptInit();
 	InitializeRtc();	//RTC Initialization
 
-	DigitDisplay_init(4); //Digit Display initialization
+	DigitDisplay_init(7); //Digit Display initialization
 
 	TMR0_init(TICK_PERIOD,0);		//initialize timer0
-	TMR1_init(DIGIT_REFRESH_PERIOD,DigitDisplay_task);	// Timer1 initialization						//initialize timer1
+	TMR1_init(DIGIT_REFRESH_PERIOD,DigitDisplay_task);	// Timer1 initialization
+
+	COM_init(CMD_SOP,CMD_EOP,RESP_SOP,RESP_EOP,APP_comCallBack);					
 
 	APP_init();
+
+
 	EnableInterrupts();		//Interrupts initialization
 
-//	COM_init(CMD_SOP,CMD_EOP,RESP_SOP,RESP_EOP,APP_comCallBack);
+
 	
 	ENABLE_GLOBAL_INT();
 
@@ -178,7 +183,7 @@ void main(void)
 	while(1)
 	{
 
-	//	COM_task();
+		COM_task();
 
 	`	if(heartBeatCount >= 600 )
 		{	

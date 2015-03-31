@@ -1,4 +1,6 @@
 #include "app.h" 
+#include "communication.h"
+#include "uart.h"
 
 
 
@@ -25,6 +27,8 @@ void APP_handlePortBInput(void);
 void APP_resetDisplayBuffer(void);
 void APP_updateRTC(void);
 
+
+
 /*
 *------------------------------------------------------------------------------
 * app - the app structure. 
@@ -44,6 +48,8 @@ typedef struct _App
 
 	BOOL nextInputValue; // stores input value as 1
 	UINT8 blinkIndex;
+
+	UINT8 temparatureBuf[3];
 }APP;
 
 #pragma idata app_data
@@ -70,6 +76,8 @@ void APP_init( void )
 	//Set Date and Time
 
 //	WriteRtcTimeAndDate(writeTimeDateBuffer);
+	
+
 	app.state = CLOCK_MODE;
 
 	app.previousState = 0XFF;
@@ -101,6 +109,7 @@ void APP_task( void )
 		EXIT_CRITICAL_SECTION();   //turn ON all interrupts
 	}
 	
+
 	switch ( app.state )	
 	{
 		case CLOCK_MODE: 
@@ -110,7 +119,7 @@ void APP_task( void )
 					
 	
 					//DigitDisplay_updateBuffer(temp);		
-					DigitDisplay_updateBuffer(displayBuffer);
+					DigitDisplay_updateBufferPartial(displayBuffer , 0, 4);
 		
 					CLOCK_LED ^= 1;	
 				
@@ -150,7 +159,7 @@ void APP_task( void )
 							break;
 						}				
 						
-						DigitDisplay_updateBuffer(displayBuffer);
+						DigitDisplay_updateBufferPartial(displayBuffer , 0, 4);
 						app.nextInputValue = 0;
 					}
 					
@@ -178,7 +187,8 @@ void APP_handlePortBInput(void)
 		if(app.state == CLOCK_MODE)			// if in clock mode
 		{
 			APP_resetDisplayBuffer();       //reset all digits
-			DigitDisplay_updateBuffer(displayBuffer);
+			//DigitDisplay_updateBuffer(displayBuffer);
+			DigitDisplay_updateBufferPartial(displayBuffer , 0, 4);
 			app.nextInputValue = 0;
 			app.blinkIndex = 0;				// make blink Index 0
 			app.state = SETTING_MODE;		// change app state to clock setting mode
@@ -248,4 +258,27 @@ void APP_updateRTC(void)
 	writeTimeDateBuffer[2] = ((displayBuffer[3] - '0') << 4) | (displayBuffer[2] - '0'); //store Hours
 
 	WriteRtcTimeAndDate(writeTimeDateBuffer);  //update RTC
+}
+
+
+
+
+UINT8 APP_comCallBack( far UINT8 *rxPacket, far UINT8* txCode,far UINT8** txPacket)
+{
+
+	UINT8 i;
+
+	UINT8 length = 0;
+
+	length = strlen(rxPacket);
+	for( i = 0; i < length; i++ )
+		displayBuffer[i+4] = rxPacket[i];
+
+	DigitDisplay_updateBufferPartial(displayBuffer , 4, 3);	
+	//Turn on Dot for temparature display
+	DigitDisplay_DotOn(5, 1);		
+	length = 0;
+
+	return length;
+
 }		

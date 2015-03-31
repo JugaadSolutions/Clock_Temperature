@@ -13,11 +13,11 @@
 
 #define __FACTORY_CONFIGURATION__
 
-//MMD module configuration
-#define MMD_MAX_CHARS		8
-#define MMD_MAX_SEGMENTS	4
-#define MMD_MAX_ADDRESS		128
-#define __MMD_STATIC__
+
+//TIMER Configuration
+#define TIMESTAMP_DURATION 		(200)
+
+
 
 
 //COM module configuration
@@ -25,8 +25,8 @@
 //#define __RESPONSE_ENABLED__
 //#define __LOOP_BACK__
 #define BROADCAST_ADDRESS		0xFF
-#define CMD_SOP	0xAA
-#define CMD_EOP 0xBB
+#define CMD_SOP	0x3A
+#define CMD_EOP 0x0D
 #define RESP_SOP	0xCC
 #define RESP_EOP	0xDD
 #define __NO_CHECKSUM__

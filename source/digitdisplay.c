@@ -409,6 +409,10 @@ static void writeToDisplayPort( UINT8 value )
 	DIGIT_SEL_B = 0;
 	DIGIT_SEL_C = 0;
 	DIGIT_SEL_D = 0;
+	DIGIT_SEL_E = 0;
+	DIGIT_SEL_F = 0;
+	DIGIT_SEL_G = 0;
+
 	Delay10us(1);
 	DISPLAY_PORT = value;
 	switch( digitDisplay.digitIndex )
@@ -430,6 +434,20 @@ static void writeToDisplayPort( UINT8 value )
    			DIGIT_SEL_D = 1;
 		
    		break;
+
+		case 4:
+
+			DIGIT_SEL_E = 1;
+		break;
+		
+		case 5:
+
+			DIGIT_SEL_F = 1;
+		break;
+		
+		case 6:
+			DIGIT_SEL_G = 1;
+		break;
 
 		default:
 		break;
@@ -495,7 +513,7 @@ static BOOL validate( UINT8 value)
 BOOL DigitDisplay_updateBufferPartial(UINT8 *buffer, UINT8 from, UINT8 length)
 {
 	UINT8 i = 0;
-	for ( i = 0 ; i < digitDisplay.noDigits ; i++)
+	for ( i = from ; i < length ; i++)
 	{
 
 		if ( validate(buffer[i]) == FAILURE )

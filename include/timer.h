@@ -68,6 +68,10 @@ extern void TMR1_init(unsigned int reload , void (*func)());
 void TMR1_ISR(void);
 void TMR0_ISR(void);
 
+UINT32 GetAppTime(void);
+void ResetAppTime(void);
+
+
 #endif
 /*
 *  End of timer_driver.h

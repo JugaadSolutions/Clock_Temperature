@@ -47,11 +47,6 @@ typedef enum
 	MAX_DIGITS = 8
 }DIGITDISPLAY_CONFIG;
 
-enum
-{
-	FAILURE = 0,
-	SUCCESS = 1
-};
 
 /*
 *------------------------------------------------------------------------------
