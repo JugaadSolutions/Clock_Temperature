@@ -19,7 +19,6 @@
 
 
 
-
 //COM module configuration
 #define __BCC_XOR__
 //#define __RESPONSE_ENABLED__
@@ -42,6 +41,7 @@ enum
 
 
 #define __DISPLAY_TEST__
+#define COMMON_CATHODE
 
 //#define __SIMULATION__  // keypad stimulation
 
@@ -62,7 +62,12 @@ enum
 
 //#define RTC_DS1307
 
+/*------------------------------------
+ *	APP Configuration
+ *-----------------------------------*/
 
+#define RTC_DATA_ON_UART
+#define MODE_12HRS
 
 /*
 *------------------------------------------------------------------------------

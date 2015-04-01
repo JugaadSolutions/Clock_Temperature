@@ -302,8 +302,9 @@ void COM_txData()
 	UINT8 bcc = 0;
 	UINT8 i= 0;
 
+#ifndef __NO_CHECKSUM__
 	bcc = checksum(communication.txPacketBuffer, communication.txPacketLength);
-
+#endif
 
 	
 	UART_write(communication.tx_sop);
@@ -313,13 +314,12 @@ void COM_txData()
 		UART_write(communication.txPacketBuffer[i]);
 	}
 
+#ifndef __NO_CHECKSUM__
 	UART_write(bcc);
+#endif
 	UART_write(communication.tx_eop);
 
-
-#ifdef __RESPONSE_ENABLED__
 	UART_transmit();
-#endif
 	ClrWdt();
 
 	
@@ -361,4 +361,27 @@ UINT8 checksum(UINT8 *buffer, UINT8 length)
 	return bcc;
 
 #endif
-}		
+}
+
+UINT8 COM_txBuffer(UINT8 *txData, UINT8 length)
+{
+	UINT8 i;
+
+	communication.txPacketLength = length;
+	communication.txCode = 0X0A;
+
+//	communication.txPacketBuffer[COM_DEVICE_ADDRESS_INDEX] = DEVICE_ADDRESS;	//store device address
+//	++communication.txPacketLength;
+
+//	communication.txPacketBuffer[COM_TX_CODE_INDEX] = communication.txCode;	//store tx code
+//	++communication.txPacketLength;
+
+	for( i = COM_TX_DATA_START_INDEX ; i < communication.txPacketLength ; i++)	//store data
+	{
+		communication.txPacketBuffer[i] = *txData;
+		txData++;
+	}
+
+	COM_txData();
+
+}	

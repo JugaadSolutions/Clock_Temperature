@@ -401,7 +401,62 @@ void DigitDisplay_clear()
 *------------------------------------------------------------------------------
 */
 
+#if defined (COMMON_CATHODE)
 
+
+static void writeToDisplayPort( UINT8 value )
+{
+	DIGIT_SEL_A = 1;		//switch off display
+	DIGIT_SEL_B = 1;
+	DIGIT_SEL_C = 1;
+	DIGIT_SEL_D = 1;
+	DIGIT_SEL_E = 1;
+	DIGIT_SEL_F = 1;
+	DIGIT_SEL_G = 1;
+
+	Delay10us(1);
+	DISPLAY_PORT = ~value;
+	switch( digitDisplay.digitIndex )
+	{
+		case 0:
+			DIGIT_SEL_A = 0;
+			
+		break;
+		case 1:
+   			DIGIT_SEL_B = 0;
+
+		break;
+		case 2:
+   			DIGIT_SEL_C = 0;
+
+   		break;
+
+		case 3:
+   			DIGIT_SEL_D = 0;
+		
+   		break;
+
+		case 4:
+
+			DIGIT_SEL_E = 0;
+		break;
+		
+		case 5:
+
+			DIGIT_SEL_F = 0;
+		break;
+		
+		case 6:
+			DIGIT_SEL_G = 0;
+		break;
+
+		default:
+		break;
+	}
+	Delay10us(1);
+}
+
+#else
 
 static void writeToDisplayPort( UINT8 value )
 {
@@ -454,6 +509,8 @@ static void writeToDisplayPort( UINT8 value )
 	}
 	Delay10us(1);
 }
+
+#endif
 
 /*
 *------------------------------------------------------------------------------

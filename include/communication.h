@@ -47,6 +47,7 @@ void COM_init(UINT8 cmd_sop , UINT8 cmd_eop ,UINT8 resp_sop , UINT8 resp_eop , U
 
 void COM_task(void);
 void COM_txStr(rom UINT8 *str);
+UINT8 COM_txBuffer(UINT8 *txData, UINT8 length);
 #endif
 
 

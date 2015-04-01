@@ -1,7 +1,7 @@
 #include "app.h" 
 #include "communication.h"
 #include "uart.h"
-
+#include "string.h"
 
 
 #define NO_OF_DIGITS	(0X04)
@@ -14,10 +14,10 @@
 * Buffer[3] = day, Buffer[4] = date, Buffer[5] = month, Buffer[6] = year
 *------------------------------------------------------------------------------
 */
-
+UINT8 txBuffer[7] = {0};
 UINT8 displayBuffer[8] = {0};
 UINT8 readTimeDateBuffer[7] = {0};
-UINT8 writeTimeDateBuffer[] = {0X01, 0X27, 0XF2, 0X03, 0x027, 0X12, 0X13};
+UINT8 writeTimeDateBuffer[] = {0X50, 0X59, 0X72, 0X03, 0x027, 0X12, 0X13};
 extern BOOL portB_intFlag;
 extern UINT8 portB_currentData;
 
@@ -72,11 +72,9 @@ void APP_init( void )
 {
 
 
-//	writeTimeDateBuffer[2] = SetHourMode(0X03,1,1);
+//	writeTimeDateBuffer[2] = SetHourMode(0X09,1,1);
 	//Set Date and Time
-
 //	WriteRtcTimeAndDate(writeTimeDateBuffer);
-	
 
 	app.state = CLOCK_MODE;
 
@@ -101,6 +99,8 @@ void APP_init( void )
 
 void APP_task( void )
 {
+
+	UINT8 i;
 	if(portB_intFlag == 1)
 	{
 		ENTER_CRITICAL_SECTION();  //turn OFF all interrupts
@@ -113,6 +113,7 @@ void APP_task( void )
 	switch ( app.state )	
 	{
 		case CLOCK_MODE: 
+				
 					//UINT8 temp[4] = { '1','3','5','7'};
 					ReadRtcTimeAndDate(readTimeDateBuffer);  //Read the data from RTC
 					APP_conversion(); // Separate the higher and lower nibble and store it into the display buffer 
@@ -122,7 +123,16 @@ void APP_task( void )
 					DigitDisplay_updateBufferPartial(displayBuffer , 0, 4);
 		
 					CLOCK_LED ^= 1;	
+
+#if defined (RTC_DATA_ON_UART)
+				for(i = 0; i < 7; i++)			
+				{
+					txBuffer[i] = readTimeDateBuffer[i];  //store time and date 
+				}
 				
+				COM_txBuffer(txBuffer, 7);
+#endif				
+	
 		break;
 		
 		case SETTING_MODE:
@@ -232,10 +242,6 @@ void APP_conversion(void)
 {
 	displayBuffer[0] = (readTimeDateBuffer[1] & 0X0F) + '0';        //Minute LSB
 	displayBuffer[1] = ((readTimeDateBuffer[1] & 0XF0) >> 4) + '0'; //Minute MSB
-	if (readTimeDateBuffer[2] > 0x12)
-	{
-		readTimeDateBuffer[2] = readTimeDateBuffer[2] - 0x12;
-	}
 	displayBuffer[2] = (readTimeDateBuffer[2] & 0X0F) + '0';		//Hour LSB
 	displayBuffer[3] = ((readTimeDateBuffer[2] & 0X30) >> 4) + '0'; //Hour MSB
 }
@@ -257,8 +263,13 @@ void APP_updateRTC(void)
 	writeTimeDateBuffer[1] = ((displayBuffer[1] - '0') << 4) | (displayBuffer[0] - '0'); //store minutes
 	writeTimeDateBuffer[2] = ((displayBuffer[3] - '0') << 4) | (displayBuffer[2] - '0'); //store Hours
 
+#if defined (MODE_12HRS)
+	//Set 6th bit of Hour register to enable 12 hours mode.
+	writeTimeDateBuffer[2] |= 0x40;
+#endif
 	WriteRtcTimeAndDate(writeTimeDateBuffer);  //update RTC
 }
+
 
 
 
